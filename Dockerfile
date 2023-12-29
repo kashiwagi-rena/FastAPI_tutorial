@@ -21,4 +21,4 @@ RUN if [ -f pyproject.toml ]; then poetry install --no-root; fi
 COPY . .
 
 # FastAPIアプリケーションのエントリポイント
-ENTRYPOINT [ "poetry", "run", "uvicorn", "api.main:app", "--host", "0.0.0.0", "--reload" ]
+ENTRYPOINT [ "poetry", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--reload" ]
