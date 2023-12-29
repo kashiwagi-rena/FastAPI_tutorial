@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Union
 from fastapi import FastAPI
 
 class ModelName(str, Enum):
@@ -15,7 +16,9 @@ async def root():
     return {"message": "Hello World"}
 
 @app.get("/items/{item_id}")
-async def read_item(item_id: int):
+async def read_item(item_id: str, q: Union[str, None] = None):
+    if q:
+        return {"item_id": item_id, "q": q}
     return {"item_id": item_id}
 
 @app.get("/items/")
