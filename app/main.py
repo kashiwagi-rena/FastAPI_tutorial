@@ -8,7 +8,7 @@ class ModelName(str, Enum):
     resnet = "resnet"
     lenet = "lenet"
 
-class item(BaseModel):
+class Item(BaseModel):
     name: str
     description: Union[str, None] = None
     price: float
@@ -22,9 +22,17 @@ fake_items_db = [{"item_name": "Foo"}, {"item_name": "Bar"}, {"item_name": "Baz"
 async def root():
     return {"message": "Hello World"}
 
-@app.post("/items/2/")
+@app.post("/items/2")
 async def create_item(item: Item):
     return item
+
+@app.post("/item/3")
+async def create_item(item: Item):
+    item_dict = item.dict()
+    if item.tax:
+        price_with_tax = item.price + item.tax
+        item_dict.update({"price_with_tax": price_with_tax})
+    return item_dict
 
 @app.get("/items/{item_id}")
 async def read_item(item_id: str, q: Union[str, None] = None, short: bool = False):
