@@ -43,7 +43,10 @@ async def read_items(q: Union[str, None] = None):
 
 @app.get("/items/4")
 async def read_items(q: Union[str, None] = Query(default=None, max_length=50)):
-    results = {"items": [{}]}
+    results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
+    if q:
+        results.update({"q": q})
+    return results
 
 @app.get("/items/{item_id}")
 async def read_item(item_id: str, q: Union[str, None] = None, short: bool = False):
