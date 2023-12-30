@@ -61,6 +61,13 @@ async def read_user_item(
 async def create_item(item_id: int, item: Item):
     return {"item_id": item_id, **item.dict()}
 
+@app.put("/items/5/{item_id}")
+async def create_item(item_id: int, item: Item, q: Union[str, None] = None):
+    result = {"item_id": item_id, **item.dict()}
+    if q:
+        result.update({"q": q})
+    return result
+
 @app.get("/items/")
 async def read_item(skip: int = 0, limit: int = 10):
     return fake_items_db[skip : skip + limit]
