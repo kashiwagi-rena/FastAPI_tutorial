@@ -26,13 +26,20 @@ async def root():
 async def create_item(item: Item):
     return item
 
-@app.post("/item/3")
+@app.post("/items/3")
 async def create_item(item: Item):
     item_dict = item.dict()
     if item.tax:
         price_with_tax = item.price + item.tax
         item_dict.update({"price_with_tax": price_with_tax})
     return item_dict
+
+@app.get("/items/4")
+async def read_items(q: Union[str, None] = None):
+    results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
+    if q:
+        results.update({"q": q})
+    return results
 
 @app.get("/items/{item_id}")
 async def read_item(item_id: str, q: Union[str, None] = None, short: bool = False):
