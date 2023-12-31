@@ -144,9 +144,16 @@ async def create_item(item_id: int, item: Item, q: Union[str, None] = None):
 
 @app.put("/items/3/{item_id}")
 async def update_item(
-    item_id: int, item: Item, user: User, importance: Annotated[int, Body()]
+    *,
+    item_id: int,
+    item: Item,
+    user: User,
+    importance: Annotated[int, Body(gt=0)],
+    q: str | None = None,
     ):
-    results = {"item_id": item_id, "item": item, "user": user}
+    results = {"item_id": item_id, "item": item, "user": user, "importance": importance}
+    if q:
+        results.update({"q": q})
     return results
 
 @app.get("/items/")
