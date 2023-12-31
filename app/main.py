@@ -74,9 +74,18 @@ async def read_items(q: Union[str, None] = Query(default=None, min_length=3, max
     return results
 
 @app.get("/items/")
-async def read_items(q: [str] = Query(default=["foo", "bar"])):
-    query_items = {"q": q}
-    return query_items
+async def read_items(
+    q: Union[str, None] = Query(
+        default=None,
+        title="Query string",
+        description="Query string for the items to search in the database that have s good match",
+        min_length=3
+        ),
+):
+    results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
+    if q:
+        results.update({"q": q})
+    return results
 
 @app.get("/items/{item_id}")
 async def read_item(item_id: str, q: Union[str, None] = None, short: bool = False):
