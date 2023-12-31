@@ -14,6 +14,10 @@ class Item(BaseModel):
     price: float
     tax: Union[float, None] = None
 
+class User(BaseModel):
+    username: str
+    full_name: str | None = None
+
 app = FastAPI()
 
 fake_items_db = [{"item_name": "Foo"}, {"item_name": "Bar"}, {"item_name": "Baz"}]
@@ -114,18 +118,7 @@ async def read_user_item(
     item = {"item_id": item_id, "needy": needy, "skip": skip, "limit": limit}
     return item
 
-@app.put("/items/4/{item_id}")
-async def create_item(item_id: int, item: Item):
-    return {"item_id": item_id, **item.dict()}
-
-@app.put("/items/5/{item_id}")
-async def create_item(item_id: int, item: Item, q: Union[str, None] = None):
-    result = {"item_id": item_id, **item.dict()}
-    if q:
-        result.update({"q": q})
-    return result
-
-@app.get("/items/6/{item_id}")
+@app.get("/items/4/{item_id}")
 async def read_items(
     item_id: Annotated[int, Path(title="The ID of the item to get", ge=1, le=1000)],
     q: str | None = None,
@@ -136,6 +129,22 @@ async def read_items(
         results.update({"q": q})
     if item:
         results.update({"item": item})
+    return results
+
+@app.put("/items/1/{item_id}")
+async def create_item(item_id: int, item: Item):
+    return {"item_id": item_id, **item.dict()}
+
+@app.put("/items/2/{item_id}")
+async def create_item(item_id: int, item: Item, q: Union[str, None] = None):
+    result = {"item_id": item_id, **item.dict()}
+    if q:
+        result.update({"q": q})
+    return result
+
+@app.put("/items/3/{item_id}")
+async def update_item(item_id: int, item: Item, user: User):
+    results = {"item_id": item_id, "item": item, "user": user}
     return results
 
 @app.get("/items/")
