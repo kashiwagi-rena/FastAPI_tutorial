@@ -1,6 +1,6 @@
 from enum import Enum
-from typing import Union, List
-from fastapi import FastAPI, Query
+from typing import Union, List, Annotated
+from fastapi import FastAPI, Query, Path
 from pydantic import BaseModel
 
 class ModelName(str, Enum):
@@ -124,6 +124,17 @@ async def create_item(item_id: int, item: Item, q: Union[str, None] = None):
     if q:
         result.update({"q": q})
     return result
+
+@app.get("/items/6/{item_id}")
+async def read_items(
+    item_id: Annotated[int, Path(title="The ID of the item to get", ge=1, le=1000)],
+    q: str,
+    size: Annotated[float, Query(gt=1, lt=10.5)],
+):
+    results = {"item_id": item_id}
+    if q:
+        results.update({"q": q})
+    return results
 
 @app.get("/items/")
 async def read_item(skip: int = 0, limit: int = 10):
