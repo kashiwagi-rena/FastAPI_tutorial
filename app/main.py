@@ -128,12 +128,14 @@ async def create_item(item_id: int, item: Item, q: Union[str, None] = None):
 @app.get("/items/6/{item_id}")
 async def read_items(
     item_id: Annotated[int, Path(title="The ID of the item to get", ge=1, le=1000)],
-    q: str,
-    size: Annotated[float, Query(gt=1, lt=10.5)],
+    q: str | None = None,
+    item: Item | None = None,
 ):
     results = {"item_id": item_id}
     if q:
         results.update({"q": q})
+    if item:
+        results.update({"item": item})
     return results
 
 @app.get("/items/")
