@@ -77,9 +77,7 @@ async def read_items(q: Union[str, None] = Query(default=None, min_length=3, max
 async def read_items(
     q: Union[str, None] = Query(
         default=None,
-        title="Query string",
-        description="Query string for the items to search in the database that have s good match",
-        min_length=3
+        alias="item-query"
         ),
 ):
     results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
