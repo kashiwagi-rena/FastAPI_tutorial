@@ -74,7 +74,7 @@ async def read_items(q: Union[str, None] = Query(default=None, min_length=3, max
     return results
 
 @app.get("/items/")
-async def read_items(q: Union[List[str], None] = Query(default=None)):
+async def read_items(q: [str] = Query(default=["foo", "bar"])):
     query_items = {"q": q}
     return query_items
 
