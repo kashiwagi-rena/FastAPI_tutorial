@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Union
+from typing import Union, List
 from fastapi import FastAPI, Query
 from pydantic import BaseModel
 
@@ -66,13 +66,17 @@ async def read_items(q: str = Query(default="fixedquery", min_length=3)):
         results.update({"q": q})
     return results
 
-@app.get("/items/5")
+@app.get("/items/7")
 async def read_items(q: Union[str, None] = Query(default=None, min_length=3, max_length=50)):
     results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
     if q:
         results.update({"q": q})
     return results
 
+@app.get("/items/")
+async def read_items(q: Union[List[str], None] = Query(default=None)):
+    query_items = {"q": q}
+    return query_items
 
 @app.get("/items/{item_id}")
 async def read_item(item_id: str, q: Union[str, None] = None, short: bool = False):
