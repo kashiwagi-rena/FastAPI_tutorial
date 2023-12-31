@@ -1,6 +1,6 @@
 from enum import Enum
-from typing import Union
-from fastapi import FastAPI
+from typing import Union, List
+from fastapi import FastAPI, Query
 from pydantic import BaseModel
 
 class ModelName(str, Enum):
@@ -22,17 +22,74 @@ fake_items_db = [{"item_name": "Foo"}, {"item_name": "Bar"}, {"item_name": "Baz"
 async def root():
     return {"message": "Hello World"}
 
-@app.post("/items/2")
+@app.post("/items")
 async def create_item(item: Item):
     return item
 
-@app.post("/item/3")
+@app.post("/items/2")
 async def create_item(item: Item):
     item_dict = item.dict()
     if item.tax:
         price_with_tax = item.price + item.tax
         item_dict.update({"price_with_tax": price_with_tax})
     return item_dict
+
+@app.get("/items/3")
+async def read_items(q: Union[str, None] = None):
+    results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
+    if q:
+        results.update({"q": q})
+    return results
+
+@app.get("/items/4")
+async def read_items(q: Union[str, None] = Query(default=None, max_length=50)):
+    results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
+    if q:
+        results.update({"q": q})
+    return results
+
+@app.get("/items/5")
+async def read_items(
+    q: Union[str, None] = Query(
+        default=None, min_length=3, max_length=50, pattern="^fixedquery$"
+    ),
+):
+    results = {"items": [{"item_id": "foo"}, {"item_id": "Bar"}]}
+    if q:
+        results.update({"q": q})
+    return results
+
+@app.get("/items/6")
+async def read_items(q: str = Query(default="fixedquery", min_length=3)):
+    results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
+    if q:
+        results.update({"q": q})
+    return results
+
+@app.get("/items/7")
+async def read_items(q: Union[str, None] = Query(default=None, min_length=3, max_length=50)):
+    results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
+    if q:
+        results.update({"q": q})
+    return results
+
+@app.get("/items/")
+async def read_items(
+    q: Union[str, None] = Query(
+        default=None,
+        alias="item-query",
+        title="Query string",
+        description="Query string for the items to search in the database that have s good match",
+        min_length=3,
+        max_length=50,
+        pattern="^fixedquery$",
+        deprecated=True,
+        ),
+):
+    results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
+    if q:
+        results.update({"q": q})
+    return results
 
 @app.get("/items/{item_id}")
 async def read_item(item_id: str, q: Union[str, None] = None, short: bool = False):
