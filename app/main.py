@@ -1,20 +1,31 @@
 from enum import Enum
 from typing import Union, List, Annotated
 from fastapi import FastAPI, Query, Path, Body
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, HttpUrl
 
 class ModelName(str, Enum):
     alexnet = "alexnet"
     resnet = "resnet"
     lenet = "lenet"
 
+class Image(BaseModel):
+    url: HttpUrl
+    name: str
+
 class Item(BaseModel):
     name: str
-    description: str | None = Field(
-        default=None, title="The description of the item", max_length=300
-    )
-    price: float = Field(ge=0, description="The price must be greater then zero")
+    description: str | None = None
+    price: float
     tax: float | None = None
+    tags: set[str] = set()
+    image: list[Image] | None = None
+
+class Offer(BaseModel):
+    name: str
+    description: str | None = None
+    price: float
+    items: list[Item]
+
 
 class User(BaseModel):
     username: str
@@ -23,6 +34,18 @@ class User(BaseModel):
 app = FastAPI()
 
 fake_items_db = [{"item_name": "Foo"}, {"item_name": "Bar"}, {"item_name": "Baz"}]
+
+@app.post("/offers/")
+async def create_offer(offer: Offer):
+    return offer
+
+@app.post("/images/multiple/")
+async def create_multiple_images(images: list[Image]):
+    return images
+
+@app.post("/index-weights/")
+async def create_index_weights(weights: dict[int, float]):
+    return weights
 
 @app.get("/")
 async def root():
