@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import Union, List, Annotated
-from fastapi import FastAPI, Query, Path
+from fastapi import FastAPI, Query, Path, Body
 from pydantic import BaseModel, Field, HttpUrl
 
 class ModelName(str, Enum):
@@ -25,6 +25,11 @@ class Offer(BaseModel):
     description: str | None = None
     price: float
     items: list[Item]
+
+
+class User(BaseModel):
+    username: str
+    full_name: str | None = None
 
 app = FastAPI()
 
@@ -138,6 +143,19 @@ async def read_user_item(
     item = {"item_id": item_id, "needy": needy, "skip": skip, "limit": limit}
     return item
 
+@app.get("/items/4/{item_id}")
+async def read_items(
+    item_id: Annotated[int, Path(title="The ID of the item to get", ge=1, le=1000)],
+    q: str | None = None,
+    item: Item | None = None,
+):
+    results = {"item_id": item_id}
+    if q:
+        results.update({"q": q})
+    if item:
+        results.update({"item": item})
+    return results
+
 @app.put("/items/1/{item_id}")
 async def create_item(item_id: int, item: Item):
     return {"item_id": item_id, **item.dict()}
@@ -149,20 +167,23 @@ async def create_item(item_id: int, item: Item, q: Union[str, None] = None):
         result.update({"q": q})
     return result
 
-@app.put("items/{item_id}")
-async def update_item(item_id: int, item: Item):
-    results = {"item_id": item_id, "item": item}
-    return results
-
-@app.get("/items/6/{item_id}")
-async def read_items(
-    item_id: Annotated[int, Path(title="The ID of the item to get", ge=1, le=1000)],
-    q: str,
-    size: Annotated[float, Query(gt=1, lt=10.5)],
-):
-    results = {"item_id": item_id}
+@app.put("/items/3/{item_id}")
+async def update_item(
+    *,
+    item_id: int,
+    item: Item,
+    user: User,
+    importance: Annotated[int, Body(gt=0)],
+    q: str | None = None,
+    ):
+    results = {"item_id": item_id, "item": item, "user": user, "importance": importance}
     if q:
         results.update({"q": q})
+    return results
+
+@app.put("/items/4/{item_id}")
+async def update_item(item_id: int, item: Annotated[Item, Body(embed=True)]):
+    results = {"item_id": item_id, "item": item}
     return results
 
 @app.get("/items/")
