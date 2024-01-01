@@ -10,11 +10,10 @@ class ModelName(str, Enum):
 
 class Item(BaseModel):
     name: str
-    description: str | None = Field(
-        default=None, title="The description of the item", max_length=300
-    )
-    price: float = Field(ge=0, description="The price must be greater then zero")
+    description: str | None = None
+    price: float
     tax: float | None = None
+    tags: list = []
 
 app = FastAPI()
 
@@ -116,16 +115,21 @@ async def read_user_item(
     item = {"item_id": item_id, "needy": needy, "skip": skip, "limit": limit}
     return item
 
-@app.put("/items/4/{item_id}")
+@app.put("/items/1/{item_id}")
 async def create_item(item_id: int, item: Item):
     return {"item_id": item_id, **item.dict()}
 
-@app.put("/items/5/{item_id}")
+@app.put("/items/2/{item_id}")
 async def create_item(item_id: int, item: Item, q: Union[str, None] = None):
     result = {"item_id": item_id, **item.dict()}
     if q:
         result.update({"q": q})
     return result
+
+@app.put("items/{item_id}")
+async def update_item(item_id: int, item: Item):
+    results = {"item_id": item_id, "item": item}
+    return results
 
 @app.get("/items/6/{item_id}")
 async def read_items(
