@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Union, List, Annotated
 from fastapi import FastAPI, Query, Path
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 class ModelName(str, Enum):
     alexnet = "alexnet"
