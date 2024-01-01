@@ -20,9 +20,19 @@ class Item(BaseModel):
     tags: set[str] = set()
     image: list[Image] | None = None
 
+class Offer(BaseModel):
+    name: str
+    description: str | None = None
+    price: float
+    items: list[Item]
+
 app = FastAPI()
 
 fake_items_db = [{"item_name": "Foo"}, {"item_name": "Bar"}, {"item_name": "Baz"}]
+
+@app.post("/offers/")
+async def create_offer(offer: Offer):
+    return offer
 
 @app.get("/")
 async def root():
