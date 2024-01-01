@@ -10,10 +10,10 @@ class ModelName(str, Enum):
 
 class Item(BaseModel):
     name: str
-    description: str | None = None
+    description: Union[str, None] = None
     price: float
-    tax: float | None = None
-    tags: list = []
+    tax: Union[float, None] = None
+    tags: List[str] = []
 
 app = FastAPI()
 
