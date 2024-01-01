@@ -34,6 +34,10 @@ fake_items_db = [{"item_name": "Foo"}, {"item_name": "Bar"}, {"item_name": "Baz"
 async def create_offer(offer: Offer):
     return offer
 
+@app.post("/images/multiple/")
+async def create_multiple_images(images: list[Image]):
+    return images
+
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
