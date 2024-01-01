@@ -38,6 +38,10 @@ async def create_offer(offer: Offer):
 async def create_multiple_images(images: list[Image]):
     return images
 
+@app.post("/index-weights/")
+async def create_index_weights(weights: dict[int, float]):
+    return weights
+
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
