@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Union, List, Annotated
 from fastapi import FastAPI, Query, Path
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, HttpUrl
 
 class ModelName(str, Enum):
     alexnet = "alexnet"
@@ -9,7 +9,7 @@ class ModelName(str, Enum):
     lenet = "lenet"
 
 class Image(BaseModel):
-    url: str
+    url: HttpUrl
     name: str
 
 class Item(BaseModel):
